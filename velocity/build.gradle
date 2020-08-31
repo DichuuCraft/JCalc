@@ -1,0 +1,20 @@
+plugins {
+    id 'com.github.johnrengelman.shadow' version '5.2.0'
+}
+
+repositories {
+    maven {
+        name 'velocity'
+        url 'https://repo.velocitypowered.com/snapshots/'
+    }
+}
+
+dependencies {
+    implementation project(":jcalc")
+    compileOnly 'com.velocitypowered:velocity-api:1.0.0-SNAPSHOT'
+    annotationProcessor 'com.velocitypowered:velocity-api:1.0.0-SNAPSHOT'
+}
+
+shadowJar {
+    archiveBaseName = "${rootProject.name}-velocity"
+}
