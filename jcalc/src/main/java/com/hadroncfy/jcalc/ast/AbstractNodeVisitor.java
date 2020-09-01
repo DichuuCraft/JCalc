@@ -1,6 +1,6 @@
 package com.hadroncfy.jcalc.ast;
 
-public abstract class AbstractNodeVisitor implements NodeVisitor {
+public class AbstractNodeVisitor implements NodeVisitor {
 
     protected boolean enterDefault(Node node){
         return false;
@@ -73,6 +73,16 @@ public abstract class AbstractNodeVisitor implements NodeVisitor {
     @Override
     public Node visit(VariableNode node) {
         return visitDefault(node);
+    }
+
+    @Override
+    public boolean enter(ExprListNode node) throws VisitTerminatedException {
+        return enterDefault(node);
+    }
+
+    @Override
+    public Node leave(ExprListNode node) throws VisitTerminatedException {
+        return leaveDefault(node);
     }
     
 }

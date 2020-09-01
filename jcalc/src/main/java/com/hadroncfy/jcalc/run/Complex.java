@@ -5,6 +5,7 @@ public class Complex {
 
     public static final Complex ZERO = new Complex(0, 0);
     public static final Complex ONE = new Complex(1, 0);
+    public static final Complex I = new Complex(0, 1);
 
     public static final Complex COMPLEX_INFINITY = new Complex(Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY);
     public static final Complex NaN = new Complex(Double.NaN, Double.NaN);
@@ -28,6 +29,10 @@ public class Complex {
         return re.multiply(re).add(im.multiply(im));
     }
 
+    public double arg(){
+        return Math.atan2(im.getAsFloat(), re.getAsFloat());
+    }
+
     public Complex conj(){
         return new Complex(re, im.neg());
     }
@@ -38,6 +43,10 @@ public class Complex {
 
     public boolean isReal(){
         return im.isInt() && im.getAsInt() == 0;
+    }
+
+    public boolean isImag(){
+        return re.isInt() && re.getAsInt() == 0;
     }
 
     public boolean isInfinity(){
@@ -85,7 +94,7 @@ public class Complex {
             return acc;
         }
         else {
-            double arg = Math.atan2(im.getAsFloat(), re.getAsFloat());
+            double arg = arg();
             double norm = Math.sqrt(norm2().getAsFloat());
             double m = a.re.getAsFloat(), n = a.im.getAsFloat();
             double k = Math.pow(norm, m) * Math.exp(-arg * n);

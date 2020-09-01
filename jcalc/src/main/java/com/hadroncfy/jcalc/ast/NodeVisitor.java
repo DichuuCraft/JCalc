@@ -16,6 +16,9 @@ public interface NodeVisitor {
     boolean enter(DeleteNode node) throws VisitTerminatedException;
     Node leave(DeleteNode node) throws VisitTerminatedException;
 
+    boolean enter(ExprListNode node) throws VisitTerminatedException;
+    Node leave(ExprListNode node) throws VisitTerminatedException;
+
     Node visit(NumberNode node) throws VisitTerminatedException;
     Node visit(VariableNode node) throws VisitTerminatedException;
 }

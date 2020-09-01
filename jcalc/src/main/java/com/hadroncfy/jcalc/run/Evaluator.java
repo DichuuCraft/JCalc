@@ -1,11 +1,14 @@
 package com.hadroncfy.jcalc.run;
 
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Deque;
+import java.util.List;
 
 import com.hadroncfy.jcalc.ast.AssignNode;
 import com.hadroncfy.jcalc.ast.BinaryNode;
 import com.hadroncfy.jcalc.ast.DeleteNode;
+import com.hadroncfy.jcalc.ast.ExprListNode;
 import com.hadroncfy.jcalc.ast.FunctionNode;
 import com.hadroncfy.jcalc.ast.NumberNode;
 import com.hadroncfy.jcalc.ast.Node;
@@ -131,7 +134,7 @@ public class Evaluator implements NodeVisitor {
         Complex val = stack.peek();
         Node n = node.getLeft();
         if (n instanceof VariableNode) {
-            if (!ctx.setVariable(((VariableNode) n).getName(), val)){
+            if (!ctx.setVariable(((VariableNode) n).getName(), val)) {
                 makeExecutionException(n.getTextRange(), "jcalc.error.too_many_variables");
             }
         } else {
@@ -168,6 +171,10 @@ public class Evaluator implements NodeVisitor {
         return stack.pop();
     }
 
+    public List<Complex> getResults(){
+        return new ArrayList<>(stack);
+    }
+
     private void makeExecutionException(TextRange range, String msg) throws VisitTerminatedException {
         throw new VisitTerminatedException(new ExecutionException(range, msg));
     }
@@ -175,18 +182,16 @@ public class Evaluator implements NodeVisitor {
     @Override
     public boolean enter(DeleteNode node) throws VisitTerminatedException {
         Node c = node.getChild();
-        if (c instanceof VariableNode){
-            VariableNode v = (VariableNode)c;
+        if (c instanceof VariableNode) {
+            VariableNode v = (VariableNode) c;
             Complex val = ctx.removeVariable(v.getName());
-            if (val != null){
+            if (val != null) {
                 stack.push(val);
-            }
-            else {
+            } else {
                 makeExecutionException(v.getTextRange(), "jcalc.error.undefined_variable");
                 stack.push(Complex.ZERO);
             }
-        }
-        else {
+        } else {
             throw new IllegalArgumentException("Unexpected node: " + c.getClass());
         }
         return true;
@@ -194,6 +199,16 @@ public class Evaluator implements NodeVisitor {
 
     @Override
     public Node leave(DeleteNode node) {
+        return node;
+    }
+
+    @Override
+    public boolean enter(ExprListNode node) throws VisitTerminatedException {
+        return false;
+    }
+
+    @Override
+    public Node leave(ExprListNode node) throws VisitTerminatedException {
         return node;
     }
 }

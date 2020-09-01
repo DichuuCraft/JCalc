@@ -8,6 +8,7 @@ import com.hadroncfy.jcalc.run.Complex;
 import com.hadroncfy.jcalc.run.Context;
 import com.hadroncfy.jcalc.run.ExecutionException;
 import com.hadroncfy.jcalc.run.Func;
+import com.hadroncfy.jcalc.run.Mathx;
 
 import org.junit.Test;
 
@@ -33,9 +34,12 @@ public class TestEvaluate {
     public void functions(){
         Context ctx = new Context(null);
         ctx.defFunctions(Funcs.class);
+        ctx.defFunctions(Mathx.class);
 
         try {
             assertEquals(new Complex(15, 6), ctx.eval("hkm(3 + 1i) * 3"));
+            assertEquals(new Complex(1, 1), ctx.eval("sqrt(2i)"));
+            assertEquals(new Complex(5, 8), ctx.eval("sqrt(-39 + 80i)"));
         } catch (CompilationException | ExecutionException e) {
             e.printStackTrace();
             assertTrue(false);

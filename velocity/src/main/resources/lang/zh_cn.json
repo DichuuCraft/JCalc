@@ -1,0 +1,11 @@
+{
+    "jcalc.error.invalid_token": "无效的关键字",
+    "jcalc.error.undefined_variable": "变量未定义",
+    "jcalc.error.invalid_deletion_target": "试图删除非变量的对象",
+    "jcalc.error.unexpected_token": "语法错误",
+    "jcalc.error.invalid_rvalue": "无效的赋值对象",
+    "jcalc.error.invalid_number": "无效的数字",
+    "jcalc.error.incorrect_arguments": "函数参数个数错误",
+    "jcalc.error.undefined_function": "未定义的函数",
+    "jcalc.error.too_many_variables": "变量个数超出限制"
+}

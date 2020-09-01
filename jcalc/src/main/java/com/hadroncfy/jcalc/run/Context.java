@@ -3,8 +3,12 @@ package com.hadroncfy.jcalc.run;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.hadroncfy.jcalc.ast.Node;
@@ -35,7 +39,7 @@ public class Context {
         return null;
     }
 
-    public Map<String, Complex> getVariables(){
+    public Map<String, Complex> getVariables() {
         return variables;
     }
 
@@ -43,15 +47,14 @@ public class Context {
         return variables.remove(name);
     }
 
-    public void setVariableLimit(int limit){
+    public void setVariableLimit(int limit) {
         variableLimit = limit;
     }
 
     public boolean setVariable(String name, Complex val) {
-        if (variableLimit != -1 && variables.size() >= variableLimit && !variables.containsKey(name)){
+        if (variableLimit != -1 && variables.size() >= variableLimit && !variables.containsKey(name)) {
             return false;
-        }
-        else {
+        } else {
             variables.put(name, val);
             return true;
         }
@@ -80,16 +83,30 @@ public class Context {
                 functions.put(name, new StaticMethodFunction(method));
             }
         }
+        for (Field field : clazz.getDeclaredFields()) {
+            Const c = field.getAnnotation(Const.class);
+            if (c != null && Modifier.isStatic(field.getModifiers()) && field.getType() == Complex.class) {
+                String name = c.name();
+                if (name.equals("")) {
+                    name = field.getName();
+                }
+                try {
+                    variables.put(name, (Complex) field.get(null));
+                } catch (IllegalArgumentException | IllegalAccessException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 
-    public Complex eval(String name) throws CompilationException, ExecutionException {
+    public List<Complex> evalList(String name) throws CompilationException, ExecutionException {
         Reader reader = new StringReader(name);
         Node node;
         try {
             node = new Parser(new Scanner(reader)).parse();
             Evaluator exec = new Evaluator(this);
             node.accept(exec);
-            return exec.getResult();
+            return exec.getResults();
         } catch (IOException e) {
             e.printStackTrace();
         } catch (VisitTerminatedException e) {
@@ -98,6 +115,18 @@ public class Context {
                 throw (ExecutionException)c;
             }
         }
-        return null;
+        return new ArrayList<>();
     }
+
+    public Complex eval(String name) throws CompilationException, ExecutionException {
+        List<Complex> ret = evalList(name);
+        if (!ret.isEmpty()){
+            return ret.get(ret.size() - 1);
+        }
+        else {
+            return null;
+        }
+    }
+
+
 }

@@ -6,6 +6,7 @@ import java.util.List;
 
 import com.hadroncfy.jcalc.ast.AssignNode;
 import com.hadroncfy.jcalc.ast.DeleteNode;
+import com.hadroncfy.jcalc.ast.ExprListNode;
 import com.hadroncfy.jcalc.ast.FunctionNode;
 import com.hadroncfy.jcalc.ast.NumberNode;
 import com.hadroncfy.jcalc.ast.Node;
@@ -36,7 +37,19 @@ public class Parser {
 
     public Node parse() throws CompilationException, IOException {
         t = tokenSource.nextToken();
-        return parseExpression();
+        Node ret = parseExpressionList();
+        expect(Token.T_EOF);
+        return ret;
+    }
+
+    private Node parseExpressionList() throws CompilationException, IOException {
+        List<Node> ret = new ArrayList<>();
+        ret.add(parseExpression());
+        while (t.getType() == ','){
+            next();
+            ret.add(parseExpression());
+        }
+        return new ExprListNode(ret);
     }
 
     private Node parseExpression() throws CompilationException, IOException {
@@ -124,10 +137,12 @@ public class Parser {
                 if (t.getType() == '('){
                     next();
                     List<Node> args = new ArrayList<>();
-                    args.add(parseExpression());
-                    while (t.getType() == ','){
-                        next();
+                    if (t.getType() != ')'){
                         args.add(parseExpression());
+                        while (t.getType() == ','){
+                            next();
+                            args.add(parseExpression());
+                        }
                     }
                     expect(')');
                     return new FunctionNode(token.getRange(), token.getText(), args);

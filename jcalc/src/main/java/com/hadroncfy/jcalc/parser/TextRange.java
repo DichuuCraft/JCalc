@@ -32,4 +32,11 @@ public class TextRange {
     public int getEndColumn(){
         return endColumn;
     }
+
+    public static TextRange between(TextRange r1, TextRange r2){
+        TextRange r = new TextRange(r1);
+        r.endColumn = r2.endColumn;
+        r.endLine = r2.endLine;
+        return r;
+    }
 }
