@@ -43,7 +43,7 @@ public final class Mathx {
                 return new Complex(Math.log(a.re.getAsFloat()), 0);
             }
             else if (i == 0){
-                return Complex.COMPLEX_INFINITY;
+                return Complex.NaN;
             }
         }
         double norm2 = a.norm2().getAsFloat();
