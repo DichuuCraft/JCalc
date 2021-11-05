@@ -73,7 +73,8 @@ public class Complex {
         if (norm2.equals(NumberHolder.ZERO)){
             return equals(ZERO) ? NaN : COMPLEX_INFINITY;
         }
-        return new Complex(re.divide(norm2), im.divide(norm2)).multiply(a.conj());
+        Complex c = multiply(a.conj());
+        return new Complex(c.re.divide(norm2), c.im.divide(norm2));
     }
     public Complex pow(Complex a){
         if (a.isReal() && a.re.isInt()){

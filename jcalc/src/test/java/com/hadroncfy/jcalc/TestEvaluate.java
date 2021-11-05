@@ -23,7 +23,21 @@ public class TestEvaluate {
             assertEquals(new Complex(0, 2), ctx.eval("(1 + 1i) ** 2"));
             assertEquals(new Complex(87 * 54 + 121 * (45 - 8), 0), ctx.eval("87 * 54 +121 * (45 - 8)"));
             assertEquals(new Complex(8, 4), ctx.eval("(2 + 1i) << (2 + 60i)"));
+            assertEquals(new Complex(2, 0), ctx.eval("1 - 2 + 3"));
+            assertEquals(new Complex(11, 0), ctx.eval("1 - 2 + 3 * 4"));
             assertTrue(ctx.eval("(1 + 2i) ** 2").re.isInt());
+        } catch (CompilationException | ExecutionException e) {
+            e.printStackTrace();
+            assertTrue(false);
+        }
+    }
+
+    @Test
+    public void lnZeroEqualsNaN(){
+        Context ctx = new Context(null);
+        ctx.defFunctions(Mathx.class);
+        try {
+            assertEquals(Complex.NaN, ctx.eval("ln(0)"));
         } catch (CompilationException | ExecutionException e) {
             e.printStackTrace();
             assertTrue(false);

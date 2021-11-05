@@ -12,10 +12,14 @@ repositories {
 dependencies {
     implementation project(":jcalc")
     implementation 'com.google.code.gson:gson:2.8.6'
-    compileOnly 'com.velocitypowered:velocity-api:1.0.0-SNAPSHOT'
-    annotationProcessor 'com.velocitypowered:velocity-api:1.0.0-SNAPSHOT'
+    compileOnly 'com.velocitypowered:velocity-api:3.0.0'
+    annotationProcessor 'com.velocitypowered:velocity-api:3.0.0'
 }
 
 shadowJar {
     archiveBaseName = "${rootProject.name}-velocity-1.0"
+}
+
+artifacts {
+    archives shadowJar
 }

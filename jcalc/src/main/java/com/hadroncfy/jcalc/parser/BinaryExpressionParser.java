@@ -56,8 +56,9 @@ public class BinaryExpressionParser {
         if (optrs.isEmpty()){
             return false;
         }
-        int p2 = getPrecedence(optrs.peek().getType());
-        return p2 > prec || p2 == prec && isLeftAssoc(p2);
+        int type = optrs.peek().getType();
+        int p2 = getPrecedence(type);
+        return p2 > prec || p2 == prec && isLeftAssoc(type);
     }
 
     private void popStack(){

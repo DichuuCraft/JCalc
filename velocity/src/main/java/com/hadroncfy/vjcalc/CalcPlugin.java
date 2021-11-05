@@ -9,7 +9,6 @@ import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.List;
@@ -38,11 +37,12 @@ import com.velocitypowered.api.proxy.ProxyServer;
 
 import org.slf4j.Logger;
 
-import net.kyori.text.Component;
-import net.kyori.text.TextComponent;
-import net.kyori.text.format.Style;
-import net.kyori.text.format.TextColor;
-import net.kyori.text.format.TextDecoration;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.Style;
+import net.kyori.adventure.text.format.TextDecoration;
+
 
 @Plugin(id = "vjcalc", name = "In-game calculator", version = "1.0", description = "", authors = "hadroncfy")
 public class CalcPlugin implements IPlugin {
@@ -94,7 +94,7 @@ public class CalcPlugin implements IPlugin {
 
     @Subscribe
     public void onProxyInitialized(ProxyInitializeEvent event){
-        server.getCommandManager().register(new JCalcCommand(this), "jcalc");
+        this.server.getCommandManager().register("jcalc", new JCalcCommand(this));
         try {
             loadConfig();
         } catch (Exception e) {
@@ -125,11 +125,11 @@ public class CalcPlugin implements IPlugin {
     }
 
     private static TextComponent normalText(String s) {
-        return TextComponent.of(s, Style.of(TextColor.GRAY));
+        return Component.text(s, NamedTextColor.GRAY);
     }
 
     private static TextComponent errorText(String s) {
-        return TextComponent.of(s, Style.of(TextColor.YELLOW, TextDecoration.UNDERLINED));
+        return Component.text(s, Style.style(NamedTextColor.YELLOW, TextDecoration.UNDERLINED));
     }
 
     private static TextComponent makeErrorText(String input, TextRange range) {
@@ -168,14 +168,16 @@ public class CalcPlugin implements IPlugin {
             sb.append(a.toString());
         }
         server.getScheduler().buildTask(this, () -> {
-            server.broadcast(
-                    TextComponent.of(player.getUsername() + " > ", TextColor.GREEN).append(TextComponent.of(sb.toString(), TextColor.AQUA)));
+            TextComponent msg = Component.text(player.getUsername() + " > ", NamedTextColor.GREEN).append(Component.text(sb.toString(), NamedTextColor.AQUA));
+            for (Player p: this.server.getAllPlayers()) {
+                p.sendMessage(msg);
+            }
         }).delay(config.messageDelay, TimeUnit.MILLISECONDS).schedule();
     }
 
     private void sendError(Player player, String msg, String input, TextRange range){
         server.getScheduler().buildTask(this, () -> {
-            player.sendMessage(TextComponent.of(lang.getString(msg) + ": ", TextColor.RED).append(makeErrorText(input, range)));
+            player.sendMessage(Component.text(lang.getString(msg) + ": ", NamedTextColor.RED).append(makeErrorText(input, range)));
         }).delay(config.messageDelay, TimeUnit.MILLISECONDS).schedule();
     }
 
@@ -200,7 +202,7 @@ public class CalcPlugin implements IPlugin {
         Context ctx = ctxs.get(player.getUniqueId());
         if (ctx != null){
             ctx.getVariables().forEach((name, val) -> {
-                Component m = TextComponent.of(name + " = ", TextColor.GREEN).append(TextComponent.of(val.toString(), TextColor.AQUA));
+                Component m = Component.text(name + " = ", NamedTextColor.GREEN).append(Component.text(val.toString(), NamedTextColor.AQUA));
                 player.sendMessage(m);
             });
         }

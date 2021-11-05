@@ -32,6 +32,9 @@ public final class Mathx {
         c = NumberHolder.sqrt(c);
         NumberHolder re = NumberHolder.sqrt(NumberHolder.abs(a.re.add(c)).divide(2));
         NumberHolder im = NumberHolder.sqrt(NumberHolder.abs(a.re.minus(c)).divide(2));
+        if (a.im.compareTo(0) < 0){
+            im = im.neg();
+        }
         return new Complex(re, im);
     }
 
@@ -45,6 +48,9 @@ public final class Mathx {
             else if (i == 0){
                 return Complex.NaN;
             }
+        }
+        else if (a.norm2().equals(NumberHolder.ZERO)) {
+            return Complex.NaN;
         }
         double norm2 = a.norm2().getAsFloat();
         double arg = a.arg();
@@ -146,5 +152,25 @@ public final class Mathx {
             return new Complex(Math.log(x + Math.sqrt(x * x - 1)), 0);
         }
         return ln(a.plus(sqrt(a.multiply(a).minus(new Complex(1, 0)))));
+    }
+
+    @Func
+    public static Complex re(Complex a){
+        return new Complex(a.re, NumberHolder.ZERO);
+    }
+
+    @Func
+    public static Complex im(Complex a){
+        return new Complex(a.im, NumberHolder.ZERO);
+    }
+
+    @Func
+    public static Complex adj(Complex a){
+        return a.conj();
+    }
+
+    @Func
+    public static Complex abs(Complex a){
+        return new Complex(NumberHolder.sqrt(a.norm2()), NumberHolder.ZERO);
     }
 }
